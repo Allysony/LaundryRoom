@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>LAUNDRY ROOM</title>
+        <link rel="stylesheet" type="text/css" href="css/machinebusy.css">
+        <link rel="icon" href="img/mena_machine.png">
+        <script lang="javascript" src="laundry.js"></script>
+	</head>
+    <body>
+        <div class="container-fluid">
+			<a href="index.html"><img src="img/backIcon.png" class="backIcon"></a>
+            <h2 style="text-align: center;">Machine is being used by
+				<br>
+				<span id='userName'></span>
+				<br>
+				<span id='userEmail'></span>
+			</h2>
+
+            <h3 style="text-align: center;">Time Remaining</h3>
+            <h4 style="text-align: center;">for
+				<br>
+				<span id='machineName'></span>
+			</h4>
+			<center>
+	            <div id="clockdiv">
+	              <div>
+	                <span id="minutes"></span>
+	                <div class="smalltext">Minutes</div>
+	              </div>
+	              <div>
+	                <span id="seconds"></span>
+	                <div class="smalltext">Seconds</div>
+	              </div>
+	            </div>
+			</center>
+			<br>
+			<center><img id = "menaPic" src="img/mena_spinning.gif" alt="mena"></center>
+        </div>
+
+        <script>
+            request = new XMLHttpRequest();
+            url = "http://169.234.81.18:8000/api/machine_info/" + findMachineId();
+
+            request.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var machine_info = JSON.parse(this.responseText);
+
+                    end_time = machine_info["start_time"] + machine_info["duration"]*60*1000;
+                    current_time = + new Date();
+
+					user = machine_info["name"];
+					email = machine_info["email"];
+					machine = machine_info["machine_name"];
+
+					document.getElementById('userName').innerHTML = user;
+					document.getElementById('userEmail').innerHTML = email;
+					document.getElementById('machineName').innerHTML = machine;
+
+                    time_till_done = (end_time - current_time)/1000;
+
+                    startTimer(time_till_done);
+                }
+            };
+
+            request.open("GET", url, true);
+            request.send();
+        </script>
+		<footer>
+				<a href="https://github.com/ChaseC99/LaundryRoom" target="_blank">Source Code</a>
+				<p>&copy; 2018 Mena's Hackers</p>
+		</footer>
+      </body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>User Form</title>
+        <link rel="icon" href="img/mena_machine.png">
+        <script lang="javascript" src="laundry.js"></script>
+        <link rel = "stylesheet" type = "text/css" href = "css/userformstyle.css">
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <a href="index.html"><img src="img/backIcon.png" class="backIcon"></a>
+            <h1>Start New Cycle</h1>
+            <h2>
+                Enter your information below to start a new cycle for
+                <br>
+                <p id="right">
+                    <script>
+                        p = document.getElementById('right');
+                        id = findMachineId();
+                        addMachineName(id, p);
+                    </script>
+                </p>
+            </h2>
+        </div>
+        <form id="userform" action="index.html">
+
+            <script>
+                f = document.getElementById("userform");
+
+                f.onsubmit = function(){
+                    id = findMachineId();
+                    name = document.getElementById("userName").value;
+                    email = document.getElementById("userEmail").value;
+                    duration = document.getElementById("duration").value;
+
+                    request = new XMLHttpRequest();
+                    url = "http://169.234.81.18:8000/api/new_user/" + id + "/" + name + "/" + email + "/" + duration;
+
+                    request.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            //window.location.href = "machinebusy.html?machine=" + id;
+                        }
+                    };
+
+                    request.open("GET", url, true);
+                    request.send();
+
+                    window.alert("New Cycle Started!");
+                    window.location.href = ("machinebusy.html?machine=" + id);
+                };
+
+                console.log(f);
+            </script>
+
+            <input type = "text" id = 'userName' placeholder = "First and Last Name" required>
+            <br>
+            <input type = "email" id = 'userEmail' placeholder = "Email Address" required>
+            <br>
+            <center><input type = "number" id = 'duration' placeholder = "0 minutes" required></center>
+            <br>
+
+            <center><input type = "submit" value = "Submit"></center>
+
+        </form>
+        <br>
+        <center><span id="lastUser">
+            <script>
+            request = new XMLHttpRequest();
+            url = "http://169.234.81.18:8000/api/machine_info/" + findMachineId();
+
+            request.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var machines = JSON.parse(this.responseText);
+                    console.log(machines)
+                    document.getElementById("lastUser").innerHTML = "Last User: " + machines["name"] + " - " + machines["email"];
+                    document.getElementById("duration").max = machines['max_time'];
+                    document.getElementById("duration").min = machines['min_time'];
+                }
+            };
+
+            request.open("GET", url, true);
+            request.send();
+            </script>
+        </span></center>
+        <footer>
+                <a href="https://github.com/ChaseC99/LaundryRoom" target="_blank">Source Code</a>
+                <p>&copy; 2018 Mena's Hackers</p>
+        </footer>
+    </body>
+</html>

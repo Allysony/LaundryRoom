@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha3/0.7.0/sha3.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".add").click(function (event) {
+                event.preventDefault()
+                $.get("/api/add_machine/" + $("#type").val() + "/" + $("#name").val() + "/" + $("#mintime").val() + "/" + $("#maxtime").val() + "/" + $("#room").val(), function (data, status) {
+                    data = JSON.parse(data);
+                    if (data.error == undefined) {
+                        console.log("OK")
+                        location.reload();
+                    }
+                    else {
+                        console.log("err")
+                        $("#errorMessage").text(data.error)
+                    }
+                }).fail(function () {
+                    console.log("wo")
+                    $("#errorMessage").text("Invalid parameter")
+                });
+            });
+            $(".qr").click(function (event) {
+                event.preventDefault()
+                location.assign("/s/img/" + $(this).attr("value") + ".png")
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h3 class="mb-3">Add</h3>
+        <form>
+            <div class="form-row">
+                <div class="col-2">
+                    <div class="form-group">
+                        <select class="form-control" id="type">
+                            <option value="dryer">Dryer</option>
+                            <option value="washer">Washer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" id="name" placeholder="Name">
+                </div>
+                <div class="col-2">
+                    <input type="text" class="form-control" id="mintime" placeholder="Min time (mins)">
+                </div>
+                <div class="col-2">
+                    <input type="text" class="form-control" id="maxtime" placeholder="Max time (mins)">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" id="room" placeholder="Room">
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-success col-sm-12 add">Add</button>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <h6 class="col-sm-12 text-right text-danger" id="errorMessage"></h6>
+        </div>
+    </div>
+    <div class="container mt-4">
+        <h3 class="mb-3">All machines</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Room</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for machine in machines %}
+                <tr>
+                    <th scope="row">{{machine.id}}</th>
+                    <td>{{machine.type}}</td>
+                    <td>{{machine.name}}</td>
+                    <td>{{machine.duration}}</td>
+                    <td>{{machine.room}}</td>
+                    <td>{{machine.status}}</td>
+                    <td>
+                        <button type="button" class="btn btn-secondary btn-sm qr" value="{{machine.id}}">QR</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
